@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class AllergenName(str, Enum):
+class AllergenName(StrEnum):
     GLUTEN = "Gluten"
     CRUSTACEANS = "Crustaceans"
     EGGS = "Eggs"
@@ -18,7 +18,7 @@ class AllergenName(str, Enum):
     MOLLUSCS = "Molluscs"
 
 
-class FoodCategory(str, Enum):
+class FoodCategory(StrEnum):
     PLANT = "Plant"
     MEAT = "Meat"
     DAIRY = "Dairy"
@@ -27,23 +27,23 @@ class FoodCategory(str, Enum):
     MEAL = "Meal"
 
 
-class EntryType(str, Enum):
+class EntryType(StrEnum):
     FOOD = "food"
     DRINK = "drink"
 
 
-class Preparation(str, Enum):
+class Preparation(StrEnum):
     RAW = "raw"
     COOKED = "cooked"
 
 
-class Quantity(str, Enum):
+class Quantity(StrEnum):
     SMALL = "small"
     NORMAL = "normal"
     LARGE = "large"
 
 
-class StoolQuality(str, Enum):
+class StoolQuality(StrEnum):
     IDEAL = "ideal"
     NORMAL = "normal"
     CONCERNING = "concerning"
