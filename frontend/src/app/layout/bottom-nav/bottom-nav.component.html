@@ -1,0 +1,50 @@
+<nav class="bottom-nav">
+  <a class="nav-item" routerLink="/today" routerLinkActive="active">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>
+    </svg>
+    <span>Today</span>
+  </a>
+
+  <a class="nav-item" routerLink="/history" routerLinkActive="active">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3v5h5"/>
+      <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/>
+      <path d="M12 7v5l4 2"/>
+    </svg>
+    <span>History</span>
+  </a>
+
+  <div class="nav-fab-spacer"></div>
+
+  <a class="nav-item" routerLink="/foods" routerLinkActive="active">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 6h18M3 12h18M3 18h18"/>
+    </svg>
+    <span>Foods</span>
+  </a>
+
+  <a class="nav-item" routerLink="/more" routerLinkActive="active">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="5" r="1.6"/>
+      <circle cx="12" cy="12" r="1.6"/>
+      <circle cx="12" cy="19" r="1.6"/>
+    </svg>
+    <span>More</span>
+  </a>
+
+  <button class="fab" [class.open]="fabOpen()" (click)="fabClick.emit()" aria-label="Add entry">
+    <span class="fab-ring"></span>
+    @if (fabOpen()) {
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    } @else {
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    }
+  </button>
+</nav>
