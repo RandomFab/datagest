@@ -1,0 +1,146 @@
+<div class="sheet">
+  <div class="sheet-handle"></div>
+
+  <div class="sheet-header">
+    <span class="sheet-title">Add food or drink</span>
+    <button class="sheet-close" (click)="closed.emit()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5f7070" stroke-width="2.4" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  @if (step() === 'search') {
+    <!-- Type toggle -->
+    <div class="toggle-bar">
+      <button class="toggle-btn" [class.active]="activeTab() === 'food'" (click)="activeTab.set('food')">
+        🟢 Food
+      </button>
+      <button class="toggle-btn" [class.active]="activeTab() === 'drink'" (click)="activeTab.set('drink')">
+        🔵 Drink
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-field">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        [placeholder]="activeTab() === 'food' ? 'Search food…' : 'Search drink…'"
+        [value]="searchQuery()"
+        (input)="onQueryChange($any($event.target).value)"
+        autofocus
+      />
+    </div>
+
+    <!-- Results -->
+    <div class="results">
+      @if (searchResults().length > 0) {
+        <p class="results-label">SUGGESTIONS</p>
+      }
+
+      @for (food of searchResults(); track food.id) {
+        <button class="result-row" [class.highlighted]="$first" (click)="selectFood(food)">
+          <div class="result-icon" [class]="'result-icon--' + activeTab()">
+            @if (activeTab() === 'food') {
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                <path d="M2 22 17 7"/>
+              </svg>
+            } @else {
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 3h14l-1.4 15.1a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9Z"/>
+                <path d="M6 9h12"/>
+              </svg>
+            }
+          </div>
+          <div class="result-info">
+            <span class="result-name">{{ food.name }}</span>
+            @if (food.category) {
+              <span class="result-sub">{{ food.category }} · {{ food.subCategory }}</span>
+            }
+          </div>
+          @if (food.allergens.length > 0) {
+            <span class="allergen-tag">{{ food.allergens[0] }}</span>
+          } @else if (food.allergens.length === 0 && food.category) {
+            <span class="allergen-tag allergen-tag--ok">No allergens</span>
+          }
+        </button>
+      }
+
+      @if (searchQuery().trim()) {
+        <button class="result-row result-row--new" (click)="addNewFood()">
+          <div class="result-icon result-icon--new">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2.4" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </div>
+          <div class="result-info">
+            <span class="result-name result-name--teal">Add "{{ searchQuery() }}" as new</span>
+            <span class="result-sub">Allergens &amp; type can wait</span>
+          </div>
+        </button>
+      }
+    </div>
+  }
+
+  @if (step() === 'details') {
+    <div class="details">
+      <!-- Food header -->
+      <div class="detail-food-header">
+        <div class="result-icon" [class]="'result-icon--' + activeTab()" style="width:46px;height:46px;border-radius:14px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+            <path d="M2 22 17 7"/>
+          </svg>
+        </div>
+        <div>
+          <div class="detail-food-name">{{ selectedFood()?.name }}</div>
+          @if (selectedFood()?.category) {
+            <div class="detail-food-sub">{{ selectedFood()?.category }} · {{ selectedFood()?.subCategory }}</div>
+          }
+        </div>
+      </div>
+
+      @if (activeTab() === 'food') {
+        <!-- Preparation -->
+        <div class="detail-section">
+          <label class="detail-label">Preparation</label>
+          <div class="toggle-bar">
+            <button class="toggle-btn" [class.active]="preparation() === 'raw'" (click)="preparation.set('raw')">Raw</button>
+            <button class="toggle-btn" [class.active]="preparation() === 'cooked'" (click)="preparation.set('cooked')">Cooked</button>
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="detail-section">
+          <label class="detail-label">Quantity <span class="detail-label-opt">· optional</span></label>
+          <div class="quantity-row">
+            <button class="qty-btn" [class.active]="quantity() === 'small'" (click)="quantity.set('small')">Small</button>
+            <button class="qty-btn" [class.active]="quantity() === 'normal'" (click)="quantity.set('normal')">Normal</button>
+            <button class="qty-btn" [class.active]="quantity() === 'large'" (click)="quantity.set('large')">Large</button>
+          </div>
+        </div>
+      }
+
+      <!-- Time -->
+      <div class="detail-section">
+        <label class="detail-label">Time</label>
+        <input class="time-input" type="time" [value]="entryTime()" (change)="entryTime.set($any($event.target).value)" />
+      </div>
+
+      <!-- Back -->
+      <button class="back-link" (click)="back()">← Change selection</button>
+    </div>
+
+    <!-- CTA -->
+    <div class="sheet-cta">
+      <button class="cta-btn" (click)="confirm()">{{ isEditing ? 'Save changes' : 'Add to Today' }}</button>
+    </div>
+  }
+</div>
