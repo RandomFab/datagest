@@ -7,4 +7,9 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./features/today/today.routes').then(m => m.TODAY_ROUTES),
   },
+  {
+    path: 'foods',
+    loadChildren: () =>
+      import('./features/foods/foods.routes').then(m => m.FOODS_ROUTES),
+  },
 ];
