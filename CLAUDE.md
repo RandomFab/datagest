@@ -67,7 +67,7 @@ datagest/
 │       ├── schemas/             # Schémas Pydantic (validation I/O)
 │       ├── services/            # Logique métier (jamais dans les routers)
 │       ├── repositories/        # Accès données / requêtes DB
-│       ├── db/                  # Session, base, init
+│       ├── database/                  # Session, base, init
 │       └── main.py              # Point d'entrée
 │   ├── alembic/                 # Migrations
 │   └── tests/                   # Tests pytest
