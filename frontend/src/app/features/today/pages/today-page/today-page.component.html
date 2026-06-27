@@ -1,0 +1,109 @@
+<div class="today-page">
+
+  <!-- Day header -->
+  <div class="day-header">
+    <button class="nav-arrow" (click)="prevDay()" aria-label="Previous day">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+
+    <div class="day-title">
+      <span class="day-label">{{ isToday() ? 'Today' : displayDate() }}</span>
+      <span class="day-sub">
+        {{ isToday() ? displayDate() : '' }}
+        @if (entryCount() > 0) {
+          <span class="entry-count">· {{ entryCount() }} {{ entryCount() === 1 ? 'entry' : 'entries' }}</span>
+        }
+      </span>
+    </div>
+
+    <button class="nav-arrow" [class.disabled]="!hasNextDay()" (click)="nextDay()" aria-label="Next day">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-scroll">
+    @if (entries().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 2v4M16 2v4M3 10h18"/>
+            <rect x="3" y="4" width="18" height="18" rx="3"/>
+            <path d="M12 14v4M10 16h4" stroke="#0d9488"/>
+          </svg>
+        </div>
+        <h2 class="empty-title">Nothing logged yet</h2>
+        <p class="empty-desc">
+          Tap the <strong>+</strong> button to log your first meal, drink, stool, or symptom of the day.
+        </p>
+      </div>
+    } @else {
+      <div class="timeline">
+        @for (entry of entries(); track entry.id) {
+          <app-timeline-entry [entry]="entry" (tapped)="onEntryTapped($event)" />
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Speed dial overlay -->
+  @if (fabOpen()) {
+    <div class="scrim" (click)="toggleFab()"></div>
+    <div class="speed-dial-container">
+      <app-speed-dial (typeSelected)="onTypeSelected($event)" />
+    </div>
+  }
+
+  <!-- Bottom sheets overlay -->
+  @if (activeSheet() !== null) {
+    <div class="scrim" (click)="closeSheet()"></div>
+    <div class="sheet-container">
+      @switch (activeSheet()) {
+        @case ('actions') {
+          <app-entry-actions-sheet
+            [entry]="selectedEntry()!"
+            (edit)="onEditEntry()"
+            (delete)="onDeleteEntry()"
+            (closed)="closeSheet()"
+          />
+        }
+        @case ('food') {
+          <app-add-food-sheet
+            entryType="food"
+            [existingEntry]="selectedEntry()"
+            (closed)="closeSheet()"
+          />
+        }
+        @case ('drink') {
+          <app-add-food-sheet
+            entryType="drink"
+            [existingEntry]="selectedEntry()"
+            (closed)="closeSheet()"
+          />
+        }
+        @case ('stool') {
+          <app-add-stool-sheet
+            [existingEntry]="selectedEntry()"
+            (closed)="closeSheet()"
+          />
+        }
+        @case ('symptom') {
+          <app-add-symptom-sheet
+            [existingEntry]="selectedEntry()"
+            (closed)="closeSheet()"
+          />
+        }
+      }
+    </div>
+  }
+
+  <!-- Bottom nav -->
+  <app-bottom-nav
+    [fabOpen]="fabOpen() || activeSheet() !== null"
+    (fabClick)="toggleFab()"
+  />
+</div>
