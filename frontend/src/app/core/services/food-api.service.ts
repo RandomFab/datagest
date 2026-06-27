@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { FoodItemRead, FoodItemCreate, FoodCategory } from '../models/food.model';
+import { FoodItemRead, FoodItemCreate, FoodItemUpdate, FoodCategory } from '../models/food.model';
 
 @Injectable({ providedIn: 'root' })
 export class FoodApiService {
@@ -19,5 +19,13 @@ export class FoodApiService {
 
   create(data: FoodItemCreate): Observable<FoodItemRead> {
     return this.http.post<FoodItemRead>(this.base, data);
+  }
+
+  update(id: number, data: FoodItemUpdate): Observable<FoodItemRead> {
+    return this.http.patch<FoodItemRead>(`${this.base}/${id}`, data);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
   }
 }

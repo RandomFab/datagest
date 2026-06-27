@@ -29,3 +29,11 @@ export interface FoodItemCreate {
   is_drink?: boolean;
   allergen_ids?: number[];
 }
+
+export interface FoodItemUpdate {
+  name?: string;
+  category?: FoodCategory;
+  sub_category?: string | null;
+  is_drink?: boolean;
+  allergen_ids?: number[];
+}
