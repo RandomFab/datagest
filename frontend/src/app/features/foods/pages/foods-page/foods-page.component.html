@@ -1,0 +1,152 @@
+<div class="foods-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Foods & Drinks</h1>
+      @if (!svc.loading() && !svc.error()) {
+        <span class="item-count">{{ svc.items().length }} items</span>
+      }
+    </div>
+  </div>
+
+  <!-- Tab toggle -->
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="svc.activeTab() === 'food'" (click)="setTab('food')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+        <path d="M2 22 17 7"/>
+      </svg>
+      Foods
+    </button>
+    <button class="tab-btn" [class.active]="svc.activeTab() === 'drink'" (click)="setTab('drink')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 3h14l-1.4 15.1a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9Z"/>
+        <path d="M6 9h12"/>
+      </svg>
+      Drinks
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-field">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input
+      type="text"
+      [placeholder]="svc.activeTab() === 'food' ? 'Search foods…' : 'Search drinks…'"
+      [value]="svc.searchQuery()"
+      (input)="onSearch($any($event.target).value)"
+    />
+  </div>
+
+  <!-- Content -->
+  <div class="items-scroll">
+    @if (svc.loading()) {
+      <div class="state-wrapper">
+        <div class="state-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+        <p class="state-desc">Loading…</p>
+      </div>
+    } @else if (svc.error()) {
+      <div class="state-wrapper">
+        <p class="state-title error">{{ svc.error() }}</p>
+      </div>
+    } @else if (svc.items().length === 0) {
+      <div class="state-wrapper">
+        <div class="state-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+            <path d="M2 22 17 7"/>
+          </svg>
+        </div>
+        <h2 class="state-title">No items found</h2>
+        <p class="state-desc">
+          @if (svc.searchQuery()) {
+            No results for "{{ svc.searchQuery() }}".
+          } @else {
+            Tap <strong>+</strong> to add your first {{ svc.activeTab() === 'food' ? 'food' : 'drink' }}.
+          }
+        </p>
+      </div>
+    } @else {
+      <div class="items-list">
+        @if (svc.searchQuery()) {
+          <p class="list-label">{{ svc.items().length }} result{{ svc.items().length > 1 ? 's' : '' }}</p>
+        } @else {
+          <p class="list-label">All {{ svc.activeTab() === 'food' ? 'foods' : 'drinks' }}</p>
+        }
+
+        @for (item of svc.items(); track item.id) {
+          <button class="food-card" (click)="onItemTapped(item)">
+            <div class="food-icon" [class]="'food-icon--' + (item.is_drink ? 'drink' : 'food')">
+              @if (!item.is_drink) {
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                  <path d="M2 22 17 7"/>
+                </svg>
+              } @else {
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 3h14l-1.4 15.1a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9Z"/>
+                  <path d="M6 9h12"/>
+                </svg>
+              }
+            </div>
+
+            <div class="food-info">
+              <span class="food-name">{{ item.name }}</span>
+              <span class="food-meta">
+                {{ item.category }}
+                @if (item.sub_category) { · {{ item.sub_category }} }
+              </span>
+            </div>
+
+            @if (item.allergens.length > 0) {
+              <span class="allergen-badge">{{ item.allergens.length }} allergen{{ item.allergens.length > 1 ? 's' : '' }}</span>
+            } @else {
+              <span class="allergen-badge allergen-badge--ok">No allergens</span>
+            }
+
+            <svg class="card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c5d0cf" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Sheet overlay -->
+  @if (activeSheet() !== null) {
+    <div class="scrim" (click)="closeSheet()"></div>
+    <div class="sheet-container">
+      @switch (activeSheet()) {
+        @case ('actions') {
+          <app-food-item-actions-sheet
+            [item]="selectedItem()!"
+            (edit)="onEditItem()"
+            (delete)="onDeleteItem()"
+            (closed)="closeSheet()"
+          />
+        }
+        @case ('add') {
+          <app-add-food-item-sheet (closed)="closeSheet()" />
+        }
+        @case ('edit') {
+          <app-add-food-item-sheet
+            [existingItem]="selectedItem()"
+            (closed)="closeSheet()"
+          />
+        }
+      }
+    </div>
+  }
+
+  <!-- Bottom nav -->
+  <app-bottom-nav [fabOpen]="activeSheet() !== null" (fabClick)="onFabClick()" />
+</div>
