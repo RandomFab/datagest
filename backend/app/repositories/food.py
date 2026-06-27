@@ -62,8 +62,7 @@ class FoodItemRepository:
         )
         self.db.add(item)
         await self.db.commit()
-        await self.db.refresh(item)
-        return item
+        return await self.get_by_id(item.id)  # type: ignore[return-value]
 
     async def update(
         self,
@@ -76,8 +75,7 @@ class FoodItemRepository:
         if allergens is not None:
             item.allergens = allergens
         await self.db.commit()
-        await self.db.refresh(item)
-        return item
+        return await self.get_by_id(item.id)  # type: ignore[return-value]
 
     async def delete(self, item: FoodItem) -> None:
         await self.db.delete(item)
