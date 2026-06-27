@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.session import AsyncSessionLocal
-from app.models.food import Allergen, FoodItem
+from app.models import Allergen, FoodItem
 
 # ── Allergens (EU 14 major allergens) ────────────────────────────────────────
 
