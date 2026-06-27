@@ -62,7 +62,7 @@ class FoodItemService:
         allergens = await self.allergen_repo.get_by_ids(ids)
         if len(allergens) != len(ids):
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="One or more allergen IDs are invalid",
             )
         return allergens
