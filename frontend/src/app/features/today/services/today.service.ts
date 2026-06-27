@@ -227,8 +227,8 @@ export class TodayService {
     });
   }
 
-  searchFoods(query: string): Observable<FoodItemRead[]> {
-    return this.foodApi.list({ search: query || undefined });
+  searchFoods(query: string, type: 'food' | 'drink'): Observable<FoodItemRead[]> {
+    return this.foodApi.list({ search: query || undefined, is_drink: type === 'drink' });
   }
 
   formatDate(date: Date): string {

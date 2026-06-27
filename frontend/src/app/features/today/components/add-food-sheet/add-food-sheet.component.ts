@@ -1,6 +1,6 @@
 import {
   Component, ChangeDetectionStrategy, output, inject,
-  signal, computed, input, effect, OnDestroy,
+  signal, computed, input, effect,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
@@ -30,7 +30,7 @@ export class AddFoodSheetComponent {
 
   step = signal<Step>('search');
   searchQuery = signal('');
-  activeTab = signal<EntryType>('food');
+  readonly activeTab = computed(() => this.entryType());
   selectedFood = signal<FoodItemRead | null>(null);
   customFoodName = signal<string | null>(null);
   preparation = signal<Preparation>('raw');
@@ -48,7 +48,7 @@ export class AddFoodSheetComponent {
       distinctUntilChanged(),
       switchMap(q => {
         this.searching.set(true);
-        return this.svc.searchFoods(q);
+        return this.svc.searchFoods(q, this.entryType() as 'food' | 'drink');
       }),
       takeUntilDestroyed(),
     ).subscribe({
@@ -64,7 +64,6 @@ export class AddFoodSheetComponent {
     effect(() => {
       const e = this.existingEntry();
       if (e) {
-        this.activeTab.set(e.type as EntryType);
         this.step.set('details');
         this.entryTime.set(e.time);
         this.customFoodName.set(e.name);
@@ -89,7 +88,6 @@ export class AddFoodSheetComponent {
   selectFood(food: FoodItemRead): void {
     this.selectedFood.set(food);
     this.customFoodName.set(null);
-    this.activeTab.set(food.is_drink ? 'drink' : 'food');
     this.step.set('details');
   }
 
