@@ -1,0 +1,40 @@
+<div class="speed-dial">
+  <button class="dial-btn dial-btn--food" (click)="typeSelected.emit('food')">
+    <div class="dial-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+        <path d="M2 22 17 7"/>
+      </svg>
+    </div>
+    <span class="dial-label">Food</span>
+  </button>
+
+  <button class="dial-btn dial-btn--drink" (click)="typeSelected.emit('drink')">
+    <div class="dial-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 3h14l-1.4 15.1a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9Z"/>
+        <path d="M6 9h12"/>
+      </svg>
+    </div>
+    <span class="dial-label">Drink</span>
+  </button>
+
+  <button class="dial-btn dial-btn--stool" (click)="typeSelected.emit('stool')">
+    <div class="dial-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>
+        <path d="M2 13c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>
+      </svg>
+    </div>
+    <span class="dial-label">Stool</span>
+  </button>
+
+  <button class="dial-btn dial-btn--symptom" (click)="typeSelected.emit('symptom')">
+    <div class="dial-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+    </div>
+    <span class="dial-label">Symptom</span>
+  </button>
+</div>

@@ -1,0 +1,48 @@
+.speed-dial {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  gap: 8px;
+  padding: 0 14px;
+}
+
+.dial-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:active .dial-icon {
+    transform: scale(0.92);
+  }
+}
+
+.dial-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+
+  .dial-btn--food    & { background: #16a34a; box-shadow: 0 6px 16px rgba(22, 163, 74, 0.4); }
+  .dial-btn--drink   & { background: #2563eb; box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4); }
+  .dial-btn--stool   & { background: #d97706; box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4); }
+  .dial-btn--symptom & { background: #ea580c; box-shadow: 0 6px 16px rgba(234, 88, 12, 0.4); }
+}
+
+.dial-label {
+  background: #0f2727;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 9px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
