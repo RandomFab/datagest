@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.enums import EntryType, Preparation, Quantity, StoolQuality
+from app.schemas.food import FoodItemSummary
 
 
 class FoodLogCreate(BaseModel):
@@ -20,7 +21,7 @@ class FoodLogRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    food_item_id: int | None
+    food_item: FoodItemSummary | None
     custom_name: str | None
     entry_type: EntryType
     preparation: Preparation | None

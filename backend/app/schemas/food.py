@@ -12,6 +12,16 @@ class AllergenRead(BaseModel):
     name: AllergenName
 
 
+class FoodItemSummary(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    category: FoodCategory
+    sub_category: str | None
+    is_drink: bool
+
+
 class FoodItemCreate(BaseModel):
     name: str
     category: FoodCategory
