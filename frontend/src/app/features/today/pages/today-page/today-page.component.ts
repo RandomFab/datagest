@@ -36,6 +36,8 @@ export class TodayPageComponent {
   readonly entries = this.svc.currentDateEntries;
   readonly currentDate = this.svc.currentDate;
   readonly hasNextDay = this.svc.hasNextDay;
+  readonly loading = this.svc.loading;
+  readonly error = this.svc.error;
 
   readonly displayDate = computed(() => this.svc.formatDisplayDate(this.currentDate()));
   readonly isToday = computed(() => this.svc.isToday(this.currentDate()));

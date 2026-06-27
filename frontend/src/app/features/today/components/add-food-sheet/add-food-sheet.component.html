@@ -39,14 +39,16 @@
 
     <!-- Results -->
     <div class="results">
-      @if (searchResults().length > 0) {
+      @if (searching()) {
+        <p class="results-label">Searching…</p>
+      } @else if (searchResults().length > 0) {
         <p class="results-label">SUGGESTIONS</p>
       }
 
       @for (food of searchResults(); track food.id) {
         <button class="result-row" [class.highlighted]="$first" (click)="selectFood(food)">
-          <div class="result-icon" [class]="'result-icon--' + activeTab()">
-            @if (activeTab() === 'food') {
+          <div class="result-icon" [class]="'result-icon--' + (food.is_drink ? 'drink' : 'food')">
+            @if (!food.is_drink) {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
                 <path d="M2 22 17 7"/>
@@ -60,13 +62,15 @@
           </div>
           <div class="result-info">
             <span class="result-name">{{ food.name }}</span>
-            @if (food.category) {
-              <span class="result-sub">{{ food.category }} · {{ food.subCategory }}</span>
+            @if (food.sub_category) {
+              <span class="result-sub">{{ food.category }} · {{ food.sub_category }}</span>
+            } @else {
+              <span class="result-sub">{{ food.category }}</span>
             }
           </div>
           @if (food.allergens.length > 0) {
-            <span class="allergen-tag">{{ food.allergens[0] }}</span>
-          } @else if (food.allergens.length === 0 && food.category) {
+            <span class="allergen-tag">{{ food.allergens[0].name }}</span>
+          } @else {
             <span class="allergen-tag allergen-tag--ok">No allergens</span>
           }
         </button>
@@ -100,9 +104,11 @@
           </svg>
         </div>
         <div>
-          <div class="detail-food-name">{{ selectedFood()?.name }}</div>
-          @if (selectedFood()?.category) {
-            <div class="detail-food-sub">{{ selectedFood()?.category }} · {{ selectedFood()?.subCategory }}</div>
+          <div class="detail-food-name">{{ displayName() }}</div>
+          @if (selectedFood()?.sub_category) {
+            <div class="detail-food-sub">{{ selectedFood()?.category }} · {{ selectedFood()?.sub_category }}</div>
+          } @else if (selectedFood()?.category) {
+            <div class="detail-food-sub">{{ selectedFood()?.category }}</div>
           }
         </div>
       </div>
@@ -125,6 +131,15 @@
             <button class="qty-btn" [class.active]="quantity() === 'normal'" (click)="quantity.set('normal')">Normal</button>
             <button class="qty-btn" [class.active]="quantity() === 'large'" (click)="quantity.set('large')">Large</button>
           </div>
+        </div>
+      }
+
+      @if (activeTab() === 'drink') {
+        <!-- Volume -->
+        <div class="detail-section">
+          <label class="detail-label">Volume (ml) <span class="detail-label-opt">· optional</span></label>
+          <input class="time-input" type="number" min="1" placeholder="e.g. 250"
+            (change)="volumeMl.set($any($event.target).value ? +$any($event.target).value : undefined)" />
         </div>
       }
 

@@ -40,25 +40,15 @@ export class AddStoolSheetComponent {
     const t = this.selectedType();
     if (t === null) return;
     const bristol = BRISTOL_TYPES.find(b => b.type === t)!;
-    const entryData = {
-      type: 'stool' as const,
-      name: 'Bowel movement',
-      detail: `Type ${t} · ${bristol.label.split(' · ')[1]}`,
-      bristolType: t,
-      quality: bristol.quality,
-    };
-
     const existing = this.existingEntry();
+
     if (existing) {
-      this.svc.updateEntry({ ...existing, ...entryData, time: this.entryTime() });
+      this.svc.updateStoolEntry(existing, t, bristol.quality, this.entryTime())
+        .subscribe({ next: () => this.closed.emit(), error: (e) => console.error(e) });
     } else {
-      this.svc.addEntry({
-        ...entryData,
-        time: this.entryTime(),
-        date: this.svc.formatDate(this.svc.currentDate()),
-      });
+      this.svc.addStoolEntry(t, bristol.quality, this.entryTime())
+        .subscribe({ next: () => this.closed.emit(), error: (e) => console.error(e) });
     }
-    this.closed.emit();
   }
 
   private currentTime(): string {

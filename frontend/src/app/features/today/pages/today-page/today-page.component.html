@@ -27,7 +27,20 @@
 
   <!-- Timeline -->
   <div class="timeline-scroll">
-    @if (entries().length === 0) {
+    @if (loading()) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+        <p class="empty-desc">Loading…</p>
+      </div>
+    } @else if (error()) {
+      <div class="empty-state">
+        <p class="empty-title" style="color:#e53e3e">{{ error() }}</p>
+      </div>
+    } @else if (entries().length === 0) {
       <div class="empty-state">
         <div class="empty-icon">
           <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">

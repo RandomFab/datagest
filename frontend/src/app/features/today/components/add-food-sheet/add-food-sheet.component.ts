@@ -1,7 +1,13 @@
-import { Component, ChangeDetectionStrategy, output, inject, signal, computed, input, effect } from '@angular/core';
+import {
+  Component, ChangeDetectionStrategy, output, inject,
+  signal, computed, input, effect, OnDestroy,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TodayService } from '../../services/today.service';
-import { Entry, Food, EntryType } from '../../models/entry.model';
+import { Entry, EntryType } from '../../models/entry.model';
+import { FoodItemRead } from '../../../../core/models/food.model';
 
 type Step = 'search' | 'details';
 type Preparation = 'raw' | 'cooked';
@@ -20,25 +26,48 @@ export class AddFoodSheetComponent {
   closed = output<void>();
 
   private readonly svc = inject(TodayService);
+  private readonly search$ = new Subject<string>();
 
   step = signal<Step>('search');
   searchQuery = signal('');
   activeTab = signal<EntryType>('food');
-  selectedFood = signal<Food | null>(null);
+  selectedFood = signal<FoodItemRead | null>(null);
+  customFoodName = signal<string | null>(null);
   preparation = signal<Preparation>('raw');
   quantity = signal<Quantity>('normal');
+  volumeMl = signal<number | undefined>(undefined);
   entryTime = signal<string>(this.currentTime());
+  searchResults = signal<FoodItemRead[]>([]);
+  searching = signal(false);
 
-  searchResults = computed(() => this.svc.searchFoods(this.searchQuery()));
+  readonly displayName = computed(() => this.selectedFood()?.name ?? this.customFoodName() ?? '');
 
   constructor() {
+    this.search$.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap(q => {
+        this.searching.set(true);
+        return this.svc.searchFoods(q);
+      }),
+      takeUntilDestroyed(),
+    ).subscribe({
+      next: (results) => {
+        this.searchResults.set(results);
+        this.searching.set(false);
+      },
+      error: () => this.searching.set(false),
+    });
+
+    this.search$.next('');
+
     effect(() => {
       const e = this.existingEntry();
       if (e) {
         this.activeTab.set(e.type as EntryType);
-        this.selectedFood.set({ id: e.id, name: e.name, category: '', subCategory: '', allergens: [] });
         this.step.set('details');
         this.entryTime.set(e.time);
+        this.customFoodName.set(e.name);
         if (e.type === 'food') {
           const lower = (e.detail ?? '').toLowerCase();
           this.preparation.set(lower.includes('cooked') ? 'cooked' : 'raw');
@@ -54,51 +83,54 @@ export class AddFoodSheetComponent {
 
   onQueryChange(value: string): void {
     this.searchQuery.set(value);
+    this.search$.next(value);
   }
 
-  selectFood(food: Food): void {
+  selectFood(food: FoodItemRead): void {
     this.selectedFood.set(food);
+    this.customFoodName.set(null);
+    this.activeTab.set(food.is_drink ? 'drink' : 'food');
     this.step.set('details');
   }
 
   addNewFood(): void {
     const name = this.searchQuery().trim();
     if (!name) return;
-    const fakeFood: Food = { id: 'new', name, category: '', subCategory: '', allergens: [] };
-    this.selectedFood.set(fakeFood);
+    this.selectedFood.set(null);
+    this.customFoodName.set(name);
     this.step.set('details');
   }
 
   confirm(): void {
-    const food = this.selectedFood();
-    if (!food) return;
-    const type = this.activeTab();
-    const detail = type === 'food'
-      ? `${this.capitalize(this.preparation())} · ${this.quantity()} portion`
-      : `${this.searchQuery() || food.name}`;
-
+    const name = this.displayName();
+    if (!name) return;
+    const type = this.activeTab() as 'food' | 'drink';
     const existing = this.existingEntry();
+
     if (existing) {
-      this.svc.updateEntry({ ...existing, name: food.name, detail, type, time: this.entryTime() });
-    } else {
-      this.svc.addEntry({
-        type,
-        name: food.name,
-        detail,
+      this.svc.updateFoodEntry(existing, {
+        preparation: type === 'food' ? this.preparation() : undefined,
+        quantity: type === 'food' ? this.quantity() : undefined,
         time: this.entryTime(),
-        date: this.svc.formatDate(this.svc.currentDate()),
-      });
+      }).subscribe({ next: () => this.closed.emit(), error: (e) => console.error(e) });
+    } else {
+      this.svc.addFoodEntry({
+        foodItemId: this.selectedFood()?.id,
+        customName: this.customFoodName() ?? undefined,
+        entryType: type,
+        preparation: type === 'food' ? this.preparation() : undefined,
+        quantity: type === 'food' ? this.quantity() : undefined,
+        volumeMl: type === 'drink' ? this.volumeMl() : undefined,
+        time: this.entryTime(),
+      }).subscribe({ next: () => this.closed.emit(), error: (e) => console.error(e) });
     }
-    this.closed.emit();
   }
 
   back(): void {
     this.step.set('search');
     this.selectedFood.set(null);
-  }
-
-  private capitalize(s: string): string {
-    return s.charAt(0).toUpperCase() + s.slice(1);
+    this.customFoodName.set(null);
+    this.search$.next(this.searchQuery());
   }
 
   private currentTime(): string {

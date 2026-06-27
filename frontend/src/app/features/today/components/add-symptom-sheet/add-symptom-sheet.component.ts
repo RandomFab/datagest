@@ -67,24 +67,15 @@ export class AddSymptomSheetComponent {
   confirm(): void {
     const name = this.symptomName().trim();
     if (!name) return;
-    const entryData = {
-      type: 'symptom' as const,
-      name,
-      detail: `Intensity ${this.intensity()} / 10 · ${this.intensityLabel()}`,
-      intensity: this.intensity(),
-    };
-
     const existing = this.existingEntry();
+
     if (existing) {
-      this.svc.updateEntry({ ...existing, ...entryData, time: this.entryTime() });
+      this.svc.updateSymptomEntry(existing, name, this.intensity(), this.entryTime())
+        .subscribe({ next: () => this.closed.emit(), error: (e) => console.error(e) });
     } else {
-      this.svc.addEntry({
-        ...entryData,
-        time: this.entryTime(),
-        date: this.svc.formatDate(this.svc.currentDate()),
-      });
+      this.svc.addSymptomEntry(name, this.intensity(), this.entryTime())
+        .subscribe({ next: () => this.closed.emit(), error: (e) => console.error(e) });
     }
-    this.closed.emit();
   }
 
   private currentTime(): string {
