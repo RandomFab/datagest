@@ -9,8 +9,12 @@ from app.models.enums import AllergenName, FoodCategory
 food_item_allergens = Table(
     "food_item_allergens",
     Base.metadata,
-    Column("food_item_id", Integer, ForeignKey("food_items.id", ondelete="CASCADE"), primary_key=True),
-    Column("allergen_id", Integer, ForeignKey("allergens.id", ondelete="CASCADE"), primary_key=True),
+    Column(
+        "food_item_id", Integer, ForeignKey("food_items.id", ondelete="CASCADE"), primary_key=True
+    ),
+    Column(
+        "allergen_id", Integer, ForeignKey("allergens.id", ondelete="CASCADE"), primary_key=True
+    ),
 )
 
 
@@ -37,9 +41,13 @@ class FoodItem(Base):
     category: Mapped[FoodCategory] = mapped_column(String(50), nullable=False)
     sub_category: Mapped[str | None] = mapped_column(String(100))
     is_drink: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
     allergens: Mapped[list[Allergen]] = relationship(
         Allergen, secondary=food_item_allergens, back_populates="food_items"
     )
-    food_logs: Mapped[list["FoodLog"]] = relationship("FoodLog", back_populates="food_item")  # noqa: F821
+    food_logs: Mapped[list["FoodLog"]] = relationship(  # noqa: F821
+        "FoodLog", back_populates="food_item"
+    )

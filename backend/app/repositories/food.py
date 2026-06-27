@@ -46,9 +46,7 @@ class FoodItemRepository:
 
     async def get_by_id(self, food_id: int) -> FoodItem | None:
         result = await self.db.execute(
-            select(FoodItem)
-            .options(selectinload(FoodItem.allergens))
-            .where(FoodItem.id == food_id)
+            select(FoodItem).options(selectinload(FoodItem.allergens)).where(FoodItem.id == food_id)
         )
         return result.scalar_one_or_none()
 

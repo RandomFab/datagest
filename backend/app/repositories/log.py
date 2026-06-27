@@ -52,7 +52,9 @@ class FoodLogRepository:
         entry_type: EntryType | None = None,
     ) -> list[FoodLog]:
         stmt = self._base_stmt()
-        stmt = _apply_date_filters(stmt, FoodLog.logged_at, logged_date=logged_date, from_=from_, to=to)
+        stmt = _apply_date_filters(
+            stmt, FoodLog.logged_at, logged_date=logged_date, from_=from_, to=to
+        )
         if entry_type is not None:
             stmt = stmt.where(FoodLog.entry_type == entry_type)
         result = await self.db.execute(stmt.order_by(FoodLog.logged_at.desc()))
@@ -94,7 +96,9 @@ class StoolLogRepository:
         to: datetime | None = None,
     ) -> list[StoolLog]:
         stmt = select(StoolLog)
-        stmt = _apply_date_filters(stmt, StoolLog.logged_at, logged_date=logged_date, from_=from_, to=to)
+        stmt = _apply_date_filters(
+            stmt, StoolLog.logged_at, logged_date=logged_date, from_=from_, to=to
+        )
         result = await self.db.execute(stmt.order_by(StoolLog.logged_at.desc()))
         return list(result.scalars().all())
 
@@ -137,7 +141,9 @@ class SymptomLogRepository:
         name: str | None = None,
     ) -> list[SymptomLog]:
         stmt = select(SymptomLog)
-        stmt = _apply_date_filters(stmt, SymptomLog.logged_at, logged_date=logged_date, from_=from_, to=to)
+        stmt = _apply_date_filters(
+            stmt, SymptomLog.logged_at, logged_date=logged_date, from_=from_, to=to
+        )
         if name is not None:
             stmt = stmt.where(SymptomLog.name.ilike(f"%{name}%"))
         result = await self.db.execute(stmt.order_by(SymptomLog.logged_at.desc()))

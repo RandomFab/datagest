@@ -5,8 +5,9 @@ Revises:
 Create Date: 2026-06-27
 """
 
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 revision = "001"
 down_revision = None
@@ -87,9 +88,7 @@ def upgrade() -> None:
         sa.Column("logged_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("notes", sa.Text(), nullable=True),
         sa.CheckConstraint("bristol_type BETWEEN 1 AND 7", name="ck_stool_bristol_range"),
-        sa.CheckConstraint(
-            "quality IN ('ideal', 'normal', 'concerning')", name="ck_stool_quality"
-        ),
+        sa.CheckConstraint("quality IN ('ideal', 'normal', 'concerning')", name="ck_stool_quality"),
     )
 
     op.create_table(

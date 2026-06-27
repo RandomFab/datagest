@@ -6,9 +6,9 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-
 from app.core.config import settings
 from app.models.base import Base
+
 # Import all models so Alembic autogenerate can detect them
 from app.models.food import Allergen, FoodItem, food_item_allergens  # noqa: F401
 from app.models.log import FoodLog, StoolLog, SymptomLog  # noqa: F401

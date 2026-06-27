@@ -14,4 +14,6 @@ async def get_day_summary(day: date, db: DBSession):
     food_logs = await FoodLogService(db).list_for_day(day)
     stool_logs = await StoolLogService(db).list_for_day(day)
     symptom_logs = await SymptomLogService(db).list_for_day(day)
-    return DaySummary(date=day, food_logs=food_logs, stool_logs=stool_logs, symptom_logs=symptom_logs)
+    return DaySummary(
+        date=day, food_logs=food_logs, stool_logs=stool_logs, symptom_logs=symptom_logs
+    )

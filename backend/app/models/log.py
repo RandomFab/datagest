@@ -27,8 +27,14 @@ class FoodLog(Base):
 
     __table_args__ = (
         CheckConstraint("entry_type IN ('food', 'drink')", name="ck_food_log_entry_type"),
-        CheckConstraint("preparation IN ('raw', 'cooked') OR preparation IS NULL", name="ck_food_log_preparation"),
-        CheckConstraint("quantity IN ('small', 'normal', 'large') OR quantity IS NULL", name="ck_food_log_quantity"),
+        CheckConstraint(
+            "preparation IN ('raw', 'cooked') OR preparation IS NULL",
+            name="ck_food_log_preparation",
+        ),
+        CheckConstraint(
+            "quantity IN ('small', 'normal', 'large') OR quantity IS NULL",
+            name="ck_food_log_quantity",
+        ),
     )
 
 

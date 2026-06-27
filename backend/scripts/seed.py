@@ -114,6 +114,7 @@ FOOD_ITEMS: list[tuple[str, str, str | None, bool, list[str]]] = [
 
 # ── Seed logic ────────────────────────────────────────────────────────────────
 
+
 async def seed(session: AsyncSession) -> None:
     # 1. Allergens
     allergen_map: dict[str, Allergen] = {}

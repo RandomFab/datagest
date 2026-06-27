@@ -99,9 +99,7 @@ class SymptomLogService:
         to: datetime | None = None,
         name: str | None = None,
     ) -> list[SymptomLog]:
-        return await self.repo.list_all(
-            logged_date=logged_date, from_=from_, to=to, name=name
-        )
+        return await self.repo.list_all(logged_date=logged_date, from_=from_, to=to, name=name)
 
     async def get_or_404(self, log_id: int) -> SymptomLog:
         log = await self.repo.get_by_id(log_id)
