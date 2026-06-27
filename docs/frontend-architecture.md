@@ -87,35 +87,42 @@ interface Food {
 
 ## Service (`today.service.ts`)
 
-Service singleton (`providedIn: 'root'`). Contient l'intégralité de l'état de la feature sous forme de signals. Il n'y a **aucun appel HTTP** à ce stade — les données sont mockées en dur dans le service (à remplacer par des appels FastAPI).
+Service singleton (`providedIn: 'root'`). Contient l'intégralité de l'état de la feature sous forme de signals. Toutes les données transitent par l'API FastAPI via `FoodApiService` et `LogApiService`.
 
 ### État
 
 | Signal | Type | Rôle |
 |---|---|---|
-| `allEntries` (privé) | `signal<Entry[]>` | Toutes les entrées en mémoire |
+| `allEntries` (privé) | `signal<Entry[]>` | Toutes les entrées du jour en mémoire |
 | `currentDate` | `signal<Date>` | Jour affiché (navigation) |
+| `loading` | `signal<boolean>` | Indicateur de chargement API |
+| `error` | `signal<string \| null>` | Message d'erreur à afficher |
 
 ### Computed
 
 | Computed | Rôle |
 |---|---|
-| `currentDateEntries` | Filtre `allEntries` sur `currentDate`, trie par heure croissante |
+| `currentDateEntries` | Trie `allEntries` par heure croissante |
 | `hasNextDay` | `true` si `currentDate` est strictement antérieur à aujourd'hui |
 
 ### Méthodes
 
 | Méthode | Rôle |
 |---|---|
-| `goToPreviousDay()` | Recule `currentDate` d'un jour |
-| `goToNextDay()` | Avance `currentDate` d'un jour |
-| `addEntry(data)` | Crée une entrée avec un id auto (timestamp) |
-| `updateEntry(entry)` | Remplace l'entrée de même `id` |
-| `deleteEntry(id)` | Supprime l'entrée |
-| `searchFoods(query)` | Filtre le catalogue mock, retourne max 6 résultats |
+| `loadDay(date)` | Charge food + stools + symptoms en parallèle via `forkJoin` |
+| `goToPreviousDay()` | Recule `currentDate` d'un jour et recharge |
+| `goToNextDay()` | Avance `currentDate` d'un jour et recharge |
+| `addFoodEntry(params)` | POST `/logs/food` — retourne un `Observable<Entry>` |
+| `addStoolEntry(...)` | POST `/logs/stools` — retourne un `Observable<Entry>` |
+| `addSymptomEntry(...)` | POST `/logs/symptoms` — retourne un `Observable<Entry>` |
+| `updateFoodEntry(entry, params)` | PATCH `/logs/food/{id}` |
+| `updateStoolEntry(entry, ...)` | PATCH `/logs/stools/{id}` |
+| `updateSymptomEntry(entry, ...)` | PATCH `/logs/symptoms/{id}` |
+| `deleteEntry(id)` | DELETE sur le bon endpoint selon le préfixe de l'id (`food:`, `stool:`, `symptom:`) |
+| `searchFoods(query, type)` | GET `/foods?search=…&is_drink=…` — filtré par type |
 | `formatDate(date)` | → `"YYYY-MM-DD"` |
 | `formatDisplayDate(date)` | → `"Friday, 27 Jun"` |
-| `isToday(date)` | Comparaison avec la date mock courante |
+| `isToday(date)` | Comparaison avec la date du jour |
 
 ---
 
@@ -229,8 +236,10 @@ output: closed: void
 ```
 
 **2 étapes** :
-1. `search` — toggle Food/Drink, champ de recherche, liste de résultats du catalogue, option "Add as new"
-2. `details` — préparation (Raw/Cooked), quantité (Small/Normal/Large), heure, bouton retour
+1. `search` — champ de recherche, liste de résultats filtrés par `entryType` (`is_drink` envoyé à l'API), option "Add as new"
+2. `details` — préparation Raw/Cooked + quantité S/M/L (food) ou volume ml (drink), heure, bouton retour
+
+Le type est verrouillé sur `entryType` (`activeTab` est un `computed` en lecture seule). Il n'y a pas de toggle Food/Drink dans la sheet — c'est le bouton du speed dial qui détermine le type.
 
 En mode édition, l'étape `search` est sautée — on démarre directement à `details`.
 
@@ -341,7 +350,6 @@ Le bundle de production génère un chunk séparé `today-page-component` (~57 K
 |---|---|
 | Page History | Non implémentée |
 | Page Foods (catalogue) | Non implémentée |
-| Intégration backend FastAPI | Non implémentée — données mockées dans `today.service.ts` |
 | Dark mode | Variables CSS prêtes, classes non appliquées |
 | Layout desktop (>768px) | Prévu, non implémenté |
 | Tests unitaires | Non écrits |
