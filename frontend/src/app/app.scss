@@ -1,0 +1,10 @@
+.app-shell {
+  height: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  position: relative;
+  background: var(--color-bg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,101 @@
+.sheet {
+  background: #fff;
+  border-radius: 30px 30px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 5px;
+  border-radius: 3px;
+  background: #dde5e4;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+
+.entry-preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px 16px;
+  border-bottom: 1px solid rgba(15, 40, 40, 0.07);
+}
+
+.preview-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &--food    { background: var(--color-food-bg);    color: var(--color-food);    }
+  &--drink   { background: var(--color-drink-bg);   color: var(--color-drink);   }
+  &--stool   { background: var(--color-stool-bg);   color: var(--color-stool);   }
+  &--symptom { background: var(--color-symptom-bg); color: var(--color-symptom); }
+}
+
+.preview-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.preview-detail {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.sheet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px 8px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.12s;
+
+  &:active { opacity: 0.75; }
+
+  &--edit {
+    background: rgba(13, 148, 136, 0.09);
+    color: var(--color-teal-dark);
+  }
+
+  &--delete {
+    background: rgba(220, 38, 38, 0.07);
+    color: #dc2626;
+  }
+}
+
+.cancel-btn {
+  margin: 8px 20px 18px;
+  padding: 15px;
+  border-radius: 16px;
+  background: #f1f5f4;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-muted);
+  width: calc(100% - 40px);
+  text-align: center;
+  cursor: pointer;
+  transition: opacity 0.12s;
+
+  &:active { opacity: 0.75; }
+}
