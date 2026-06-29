@@ -59,7 +59,6 @@ Thumbs.db
 *.bak
 
 # Docker
-.dockerignore
 docker-compose.override.yml
 
 # Temp & Cache
