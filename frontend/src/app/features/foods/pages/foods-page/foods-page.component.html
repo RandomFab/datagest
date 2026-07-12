@@ -135,11 +135,16 @@
           />
         }
         @case ('add') {
-          <app-add-food-item-sheet (closed)="closeSheet()" />
+          <app-add-food-item-sheet
+            [defaultCategory]="svc.activeTab() === 'drink' ? 'Drink' : 'Plant'"
+            (saved)="onFoodItemSaved($event)"
+            (closed)="closeSheet()"
+          />
         }
         @case ('edit') {
           <app-add-food-item-sheet
             [existingItem]="selectedItem()"
+            (saved)="onFoodItemSaved($event)"
             (closed)="closeSheet()"
           />
         }
