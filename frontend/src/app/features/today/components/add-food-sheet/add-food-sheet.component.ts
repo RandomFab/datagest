@@ -1,6 +1,6 @@
 import {
   Component, ChangeDetectionStrategy, output, inject,
-  signal, computed, input, effect,
+  signal, computed, input, effect, ElementRef, DestroyRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
@@ -27,6 +27,8 @@ export class AddFoodSheetComponent {
 
   private readonly svc = inject(TodayService);
   private readonly search$ = new Subject<string>();
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private readonly destroyRef = inject(DestroyRef);
 
   step = signal<Step>('search');
   searchQuery = signal('');
@@ -60,6 +62,7 @@ export class AddFoodSheetComponent {
     });
 
     this.search$.next('');
+    this.trackKeyboardOffset();
 
     effect(() => {
       const e = this.existingEntry();
@@ -133,5 +136,27 @@ export class AddFoodSheetComponent {
 
   private currentTime(): string {
     return new Date().toTimeString().slice(0, 5);
+  }
+
+  /** Keeps the sheet above the on-screen keyboard: mobile browsers shrink the
+   * visual viewport but not the layout viewport, so a `bottom: 0` sheet ends up
+   * hidden behind the keyboard unless we offset it manually. */
+  private trackKeyboardOffset(): void {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const updateOffset = () => {
+      const offset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      this.elementRef.nativeElement.style.setProperty('--keyboard-offset', `${offset}px`);
+    };
+
+    viewport.addEventListener('resize', updateOffset);
+    viewport.addEventListener('scroll', updateOffset);
+    updateOffset();
+
+    this.destroyRef.onDestroy(() => {
+      viewport.removeEventListener('resize', updateOffset);
+      viewport.removeEventListener('scroll', updateOffset);
+    });
   }
 }
