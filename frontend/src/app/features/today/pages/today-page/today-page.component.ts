@@ -3,7 +3,8 @@ import { TodayService } from '../../services/today.service';
 import { Entry, EntryType } from '../../models/entry.model';
 import { TimelineEntryComponent } from '../../components/timeline-entry/timeline-entry.component';
 import { SpeedDialComponent } from '../../components/speed-dial/speed-dial.component';
-import { AddFoodSheetComponent } from '../../components/add-food-sheet/add-food-sheet.component';
+import { AddFoodBatchSheetComponent } from '../../components/add-food-batch-sheet/add-food-batch-sheet.component';
+import { EditFoodSheetComponent } from '../../components/edit-food-sheet/edit-food-sheet.component';
 import { AddStoolSheetComponent } from '../../components/add-stool-sheet/add-stool-sheet.component';
 import { AddSymptomSheetComponent } from '../../components/add-symptom-sheet/add-symptom-sheet.component';
 import { EntryActionsSheetComponent } from '../../components/entry-actions-sheet/entry-actions-sheet.component';
@@ -16,7 +17,8 @@ type ActiveSheet = 'food' | 'drink' | 'stool' | 'symptom' | 'actions' | null;
   imports: [
     TimelineEntryComponent,
     SpeedDialComponent,
-    AddFoodSheetComponent,
+    AddFoodBatchSheetComponent,
+    EditFoodSheetComponent,
     AddStoolSheetComponent,
     AddSymptomSheetComponent,
     EntryActionsSheetComponent,

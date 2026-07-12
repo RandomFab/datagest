@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
-  FoodLogCreate, FoodLogRead, FoodLogUpdate,
+  FoodLogBatchCreate, FoodLogRead, FoodLogUpdate,
   StoolLogCreate, StoolLogRead, StoolLogUpdate,
   SymptomLogCreate, SymptomLogRead, SymptomLogUpdate,
 } from '../models/log.model';
@@ -19,8 +19,8 @@ export class LogApiService {
     return this.http.get<FoodLogRead[]>(`${this.base}/logs/food`, { params });
   }
 
-  createFoodLog(data: FoodLogCreate): Observable<FoodLogRead> {
-    return this.http.post<FoodLogRead>(`${this.base}/logs/food`, data);
+  createFoodLogsBatch(data: FoodLogBatchCreate): Observable<FoodLogRead[]> {
+    return this.http.post<FoodLogRead[]>(`${this.base}/logs/food/batch`, data);
   }
 
   updateFoodLog(id: number, data: FoodLogUpdate): Observable<FoodLogRead> {

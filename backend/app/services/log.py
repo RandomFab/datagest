@@ -5,8 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.enums import EntryType
 from app.models.log import FoodLog, StoolLog, SymptomLog
+from app.repositories.food import FoodItemRepository
 from app.repositories.log import FoodLogRepository, StoolLogRepository, SymptomLogRepository
 from app.schemas.log import (
+    FoodLogBatchCreate,
     FoodLogCreate,
     FoodLogUpdate,
     StoolLogCreate,
@@ -19,6 +21,7 @@ from app.schemas.log import (
 class FoodLogService:
     def __init__(self, db: AsyncSession) -> None:
         self.repo = FoodLogRepository(db)
+        self.food_item_repo = FoodItemRepository(db)
 
     async def list_all(
         self,
@@ -40,6 +43,17 @@ class FoodLogService:
 
     async def create(self, data: FoodLogCreate) -> FoodLog:
         return await self.repo.create(data)
+
+    async def create_batch(self, data: FoodLogBatchCreate) -> list[FoodLog]:
+        requested_ids = {item.food_item_id for item in data.items}
+        existing_ids = await self.food_item_repo.get_existing_ids(list(requested_ids))
+        missing_ids = requested_ids - existing_ids
+        if missing_ids:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Unknown food_item_id(s): {sorted(missing_ids)}",
+            )
+        return await self.repo.create_batch(data)
 
     async def update(self, log_id: int, data: FoodLogUpdate) -> FoodLog:
         log = await self.get_or_404(log_id)
