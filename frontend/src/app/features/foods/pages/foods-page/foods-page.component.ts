@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { FoodApiService } from '../../../../core/services/food-api.service';
 import { FoodItemRead } from '../../../../core/models/food.model';
 import { FoodsCatalogService } from '../../services/foods-catalog.service';
-import { AddFoodItemSheetComponent } from '../../components/add-food-item-sheet/add-food-item-sheet.component';
+import { AddFoodItemSheetComponent } from '../../../../shared/components/add-food-item-sheet/add-food-item-sheet.component';
 import { FoodItemActionsSheetComponent } from '../../components/food-item-actions-sheet/food-item-actions-sheet.component';
 import { BottomNavComponent } from '../../../../layout/bottom-nav/bottom-nav.component';
 
@@ -38,6 +38,11 @@ export class FoodsPageComponent {
 
   onEditItem(): void {
     this.activeSheet.set('edit');
+  }
+
+  onFoodItemSaved(item: FoodItemRead): void {
+    this.selectedItem() ? this.svc.replace(item) : this.svc.prepend(item);
+    this.closeSheet();
   }
 
   onDeleteItem(): void {

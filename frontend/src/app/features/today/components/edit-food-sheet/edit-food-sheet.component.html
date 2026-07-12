@@ -1,0 +1,69 @@
+<div class="sheet">
+  <div class="sheet-handle"></div>
+
+  <div class="sheet-header">
+    <span class="sheet-title">Edit {{ entryType() === 'food' ? 'food' : 'drink' }}</span>
+    <button class="sheet-close" (click)="closed.emit()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5f7070" stroke-width="2.4" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="details">
+    <!-- Food header -->
+    <div class="detail-food-header">
+      <div class="result-icon" [class]="'result-icon--' + activeTab()" style="width:46px;height:46px;border-radius:14px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+          <path d="M2 22 17 7"/>
+        </svg>
+      </div>
+      <div>
+        <div class="detail-food-name">{{ foodName() }}</div>
+      </div>
+    </div>
+
+    @if (activeTab() === 'food') {
+      <!-- Preparation -->
+      <div class="detail-section">
+        <label class="detail-label">Preparation</label>
+        <div class="toggle-bar">
+          <button class="toggle-btn" [class.active]="preparation() === 'raw'" (click)="preparation.set('raw')">Raw</button>
+          <button class="toggle-btn" [class.active]="preparation() === 'cooked'" (click)="preparation.set('cooked')">Cooked</button>
+        </div>
+      </div>
+
+      <!-- Quantity -->
+      <div class="detail-section">
+        <label class="detail-label">Quantity <span class="detail-label-opt">· optional</span></label>
+        <div class="quantity-row">
+          <button class="qty-btn" [class.active]="quantity() === 'small'" (click)="quantity.set('small')">Small</button>
+          <button class="qty-btn" [class.active]="quantity() === 'normal'" (click)="quantity.set('normal')">Normal</button>
+          <button class="qty-btn" [class.active]="quantity() === 'large'" (click)="quantity.set('large')">Large</button>
+        </div>
+      </div>
+    }
+
+    @if (activeTab() === 'drink') {
+      <!-- Volume -->
+      <div class="detail-section">
+        <label class="detail-label">Volume (ml) <span class="detail-label-opt">· optional</span></label>
+        <input class="time-input" type="number" min="1" placeholder="e.g. 250"
+          (change)="volumeMl.set($any($event.target).value ? +$any($event.target).value : undefined)" />
+      </div>
+    }
+
+    <!-- Time -->
+    <div class="detail-section">
+      <label class="detail-label">Time</label>
+      <input class="time-input" type="time" [value]="entryTime()" (change)="entryTime.set($any($event.target).value)" />
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="sheet-cta">
+    <button class="cta-btn" (click)="confirm()">Save changes</button>
+  </div>
+</div>

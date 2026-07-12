@@ -1,9 +1,8 @@
 import { Component, ChangeDetectionStrategy, output, inject, signal, computed, input, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AllergenApiService } from '../../../../core/services/allergen-api.service';
-import { FoodApiService } from '../../../../core/services/food-api.service';
-import { AllergenRead, FoodCategory, FoodItemRead } from '../../../../core/models/food.model';
-import { FoodsCatalogService } from '../../services/foods-catalog.service';
+import { AllergenApiService } from '../../../core/services/allergen-api.service';
+import { FoodApiService } from '../../../core/services/food-api.service';
+import { AllergenRead, FoodCategory, FoodItemRead } from '../../../core/models/food.model';
 
 const CATEGORIES: FoodCategory[] = ['Plant', 'Meat', 'Dairy', 'Fish', 'Drink', 'Meal'];
 
@@ -16,11 +15,12 @@ const CATEGORIES: FoodCategory[] = ['Plant', 'Meat', 'Dairy', 'Fish', 'Drink', '
 })
 export class AddFoodItemSheetComponent {
   existingItem = input<FoodItemRead | null>(null);
+  defaultCategory = input<FoodCategory>('Plant');
   closed = output<void>();
+  saved = output<FoodItemRead>();
 
   private readonly allergenApi = inject(AllergenApiService);
   private readonly foodApi = inject(FoodApiService);
-  private readonly catalog = inject(FoodsCatalogService);
 
   readonly categories = CATEGORIES;
 
@@ -37,7 +37,7 @@ export class AddFoodItemSheetComponent {
   readonly canSubmit = computed(() => this.name().trim().length > 0 && !this.submitting());
 
   constructor() {
-    this.category.set(this.catalog.activeTab() === 'drink' ? 'Drink' : 'Plant');
+    this.category.set(this.defaultCategory());
 
     this.allergenApi.list().subscribe(allergens => {
       this.allergens.set(allergens);
@@ -84,10 +84,7 @@ export class AddFoodItemSheetComponent {
 
     if (existing) {
       this.foodApi.update(existing.id, payload).subscribe({
-        next: updated => {
-          this.catalog.replace(updated);
-          this.closed.emit();
-        },
+        next: updated => this.saved.emit(updated),
         error: () => {
           this.error.set('Failed to save. Please try again.');
           this.submitting.set(false);
@@ -95,10 +92,7 @@ export class AddFoodItemSheetComponent {
       });
     } else {
       this.foodApi.create(payload).subscribe({
-        next: item => {
-          this.catalog.prepend(item);
-          this.closed.emit();
-        },
+        next: item => this.saved.emit(item),
         error: () => {
           this.error.set('Failed to save. Please try again.');
           this.submitting.set(false);
