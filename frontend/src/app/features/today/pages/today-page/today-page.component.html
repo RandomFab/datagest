@@ -85,18 +85,18 @@
           />
         }
         @case ('food') {
-          <app-add-food-sheet
-            entryType="food"
-            [existingEntry]="selectedEntry()"
-            (closed)="closeSheet()"
-          />
+          @if (selectedEntry(); as entry) {
+            <app-edit-food-sheet entryType="food" [existingEntry]="entry" (closed)="closeSheet()" />
+          } @else {
+            <app-add-food-batch-sheet entryType="food" (closed)="closeSheet()" />
+          }
         }
         @case ('drink') {
-          <app-add-food-sheet
-            entryType="drink"
-            [existingEntry]="selectedEntry()"
-            (closed)="closeSheet()"
-          />
+          @if (selectedEntry(); as entry) {
+            <app-edit-food-sheet entryType="drink" [existingEntry]="entry" (closed)="closeSheet()" />
+          } @else {
+            <app-add-food-batch-sheet entryType="drink" (closed)="closeSheet()" />
+          }
         }
         @case ('stool') {
           <app-add-stool-sheet

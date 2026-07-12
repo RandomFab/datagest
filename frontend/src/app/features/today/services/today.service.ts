@@ -3,7 +3,7 @@ import { forkJoin, Observable, tap } from 'rxjs';
 import { Entry, Food } from '../models/entry.model';
 import { FoodApiService } from '../../../core/services/food-api.service';
 import { LogApiService } from '../../../core/services/log-api.service';
-import { FoodLogCreate, FoodLogUpdate, StoolLogCreate, StoolLogUpdate, SymptomLogCreate, SymptomLogUpdate, StoolQuality } from '../../../core/models/log.model';
+import { FoodLogBatchCreate, FoodLogUpdate, StoolLogCreate, StoolLogUpdate, SymptomLogCreate, SymptomLogUpdate, StoolQuality } from '../../../core/models/log.model';
 import { FoodItemRead } from '../../../core/models/food.model';
 import { BRISTOL_TYPES } from '../models/entry.model';
 
@@ -74,33 +74,32 @@ export class TodayService {
     this.loadDay(d);
   }
 
-  addFoodEntry(params: {
-    foodItemId?: number;
-    customName?: string;
+  addFoodEntriesBatch(params: {
     entryType: 'food' | 'drink';
-    preparation?: 'raw' | 'cooked';
-    quantity?: 'small' | 'normal' | 'large';
-    volumeMl?: number;
     time: string;
-    notes?: string;
-  }): Observable<Entry> {
-    const loggedAt = this.buildLoggedAt(params.time);
-    const payload: FoodLogCreate = {
-      food_item_id: params.foodItemId,
-      custom_name: params.customName,
-      entry_type: params.entryType,
-      preparation: params.preparation,
-      quantity: params.quantity,
-      volume_ml: params.volumeMl,
-      logged_at: loggedAt,
-      notes: params.notes,
+    items: {
+      foodItemId: number;
+      preparation?: 'raw' | 'cooked';
+      quantity?: 'small' | 'normal' | 'large';
+      volumeMl?: number;
+    }[];
+  }): Observable<Entry[]> {
+    const payload: FoodLogBatchCreate = {
+      logged_at: this.buildLoggedAt(params.time),
+      items: params.items.map(item => ({
+        food_item_id: item.foodItemId,
+        entry_type: params.entryType,
+        preparation: item.preparation,
+        quantity: item.quantity,
+        volume_ml: item.volumeMl,
+      })),
     };
     return new Observable(observer => {
-      this.logApi.createFoodLog(payload).subscribe({
-        next: (log) => {
-          const entry = this.foodLogToEntry(log);
-          this.allEntries.update(entries => [...entries, entry]);
-          observer.next(entry);
+      this.logApi.createFoodLogsBatch(payload).subscribe({
+        next: (logs) => {
+          const entries = logs.map(log => this.foodLogToEntry(log));
+          this.allEntries.update(current => [...current, ...entries]);
+          observer.next(entries);
           observer.complete();
         },
         error: (err) => observer.error(err),

@@ -72,67 +72,6 @@
   }
 }
 
-.search-field {
-  margin: 0 22px 8px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #fff;
-  border: 2px solid var(--color-teal);
-  border-radius: 14px;
-  padding: 12px 14px;
-  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
-  flex-shrink: 0;
-
-  input {
-    flex: 1;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--color-text);
-    background: none;
-  }
-}
-
-.results {
-  flex: 1;
-  overflow-y: auto;
-  padding: 6px 14px;
-}
-
-.results-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #9aa9a8;
-  letter-spacing: 0.06em;
-  padding: 6px 8px 4px;
-  margin: 0;
-}
-
-.result-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 10px;
-  border-radius: 13px;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &.highlighted {
-    background: #f0fdf4;
-  }
-
-  &:not(.highlighted):hover {
-    background: #f7faf9;
-  }
-
-  &--new {
-    border: 1.5px dashed #c7d3d2;
-    margin-top: 4px;
-  }
-}
-
 .result-icon {
   width: 36px;
   height: 36px;
@@ -144,43 +83,6 @@
 
   &--food   { background: var(--color-food-bg);    color: var(--color-food);    }
   &--drink  { background: var(--color-drink-bg);   color: var(--color-drink);   }
-  &--new    { background: #f0fdfa;                 color: var(--color-teal);    }
-}
-
-.result-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.result-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-text);
-
-  &--teal { color: var(--color-teal); }
-}
-
-.result-sub {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--color-muted);
-}
-
-.allergen-tag {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--color-stool);
-  background: var(--color-stool-bg);
-  padding: 3px 8px;
-  border-radius: 7px;
-  flex-shrink: 0;
-
-  &--ok {
-    color: var(--color-food);
-    background: var(--color-food-bg);
-  }
 }
 
 /* Details step */
@@ -204,12 +106,6 @@
   font-size: 19px;
   font-weight: 800;
   color: var(--color-text);
-}
-
-.detail-food-sub {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-muted);
 }
 
 .detail-section {
@@ -268,16 +164,6 @@
     border-color: var(--color-teal);
     box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
   }
-}
-
-.back-link {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-teal);
-  cursor: pointer;
-  text-align: left;
-  padding: 0;
-  margin-top: -8px;
 }
 
 .sheet-cta {

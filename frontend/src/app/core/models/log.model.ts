@@ -16,23 +16,26 @@ export interface FoodLogRead {
   notes: string | null;
 }
 
-export interface FoodLogCreate {
-  food_item_id?: number;
-  custom_name?: string;
-  entry_type: 'food' | 'drink';
-  preparation?: Preparation;
-  quantity?: Quantity;
-  volume_ml?: number;
-  logged_at: string;
-  notes?: string;
-}
-
 export interface FoodLogUpdate {
   preparation?: Preparation;
   quantity?: Quantity;
   volume_ml?: number;
   logged_at?: string;
   notes?: string;
+}
+
+export interface FoodLogBatchItem {
+  food_item_id: number;
+  entry_type: 'food' | 'drink';
+  preparation?: Preparation;
+  quantity?: Quantity;
+  volume_ml?: number;
+  notes?: string;
+}
+
+export interface FoodLogBatchCreate {
+  logged_at: string;
+  items: FoodLogBatchItem[];
 }
 
 export interface StoolLogRead {
