@@ -107,6 +107,66 @@ async def test_delete_food_log(client: AsyncClient):
     assert r.status_code == 404
 
 
+@pytest.mark.asyncio
+async def test_create_food_logs_batch(client: AsyncClient):
+    banana = await client.post(
+        f"{BASE}/foods", json={"name": "Banana", "category": "Plant", "is_drink": False}
+    )
+    rice = await client.post(
+        f"{BASE}/foods", json={"name": "Rice", "category": "Plant", "is_drink": False}
+    )
+    banana_id = banana.json()["id"]
+    rice_id = rice.json()["id"]
+
+    r = await client.post(
+        f"{BASE}/logs/food/batch",
+        json={
+            "logged_at": "2026-06-27T08:00:00",
+            "items": [
+                {"food_item_id": banana_id, "entry_type": "food", "quantity": "normal"},
+                {
+                    "food_item_id": rice_id,
+                    "entry_type": "food",
+                    "preparation": "cooked",
+                    "quantity": "large",
+                },
+            ],
+        },
+    )
+    assert r.status_code == 201
+    data = r.json()
+    assert len(data) == 2
+    assert {item["food_item"]["id"] for item in data} == {banana_id, rice_id}
+    assert all(item["logged_at"] == "2026-06-27T08:00:00" for item in data)
+
+    r = await client.get(f"{BASE}/logs/food")
+    assert len(r.json()) == 2
+
+
+@pytest.mark.asyncio
+async def test_create_food_logs_batch_unknown_food_item(client: AsyncClient):
+    r = await client.post(
+        f"{BASE}/logs/food/batch",
+        json={
+            "logged_at": "2026-06-27T08:00:00",
+            "items": [{"food_item_id": 99999, "entry_type": "food"}],
+        },
+    )
+    assert r.status_code == 400
+
+    r = await client.get(f"{BASE}/logs/food")
+    assert r.json() == []
+
+
+@pytest.mark.asyncio
+async def test_create_food_logs_batch_empty_items(client: AsyncClient):
+    r = await client.post(
+        f"{BASE}/logs/food/batch",
+        json={"logged_at": "2026-06-27T08:00:00", "items": []},
+    )
+    assert r.status_code == 422
+
+
 # ---------------------------------------------------------------------------
 # Stool logs
 # ---------------------------------------------------------------------------

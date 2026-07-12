@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.database.deps import DBSession
 from app.models.enums import EntryType
-from app.schemas.log import FoodLogCreate, FoodLogRead, FoodLogUpdate
+from app.schemas.log import FoodLogBatchCreate, FoodLogCreate, FoodLogRead, FoodLogUpdate
 from app.services.log import FoodLogService
 
 router = APIRouter(prefix="/logs/food", tags=["Food Logs"])
@@ -28,6 +28,13 @@ async def list_food_logs(
 @router.post("", response_model=FoodLogRead, status_code=status.HTTP_201_CREATED)
 async def create_food_log(data: FoodLogCreate, service: FoodLogService = Depends(get_service)):
     return await service.create(data)
+
+
+@router.post("/batch", response_model=list[FoodLogRead], status_code=status.HTTP_201_CREATED)
+async def create_food_logs_batch(
+    data: FoodLogBatchCreate, service: FoodLogService = Depends(get_service)
+):
+    return await service.create_batch(data)
 
 
 @router.get("/{log_id}", response_model=FoodLogRead)

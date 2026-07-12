@@ -8,6 +8,7 @@ from sqlalchemy.sql import Select
 from app.models.enums import EntryType
 from app.models.log import FoodLog, StoolLog, SymptomLog
 from app.schemas.log import (
+    FoodLogBatchCreate,
     FoodLogCreate,
     FoodLogUpdate,
     StoolLogCreate,
@@ -69,6 +70,19 @@ class FoodLogRepository:
         self.db.add(log)
         await self.db.commit()
         return await self.get_by_id(log.id)  # type: ignore[return-value]
+
+    async def create_batch(self, data: FoodLogBatchCreate) -> list[FoodLog]:
+        logs = [
+            FoodLog(logged_at=data.logged_at, **item.model_dump())
+            for item in data.items
+        ]
+        self.db.add_all(logs)
+        await self.db.commit()
+        ids = [log.id for log in logs]
+        result = await self.db.execute(
+            self._base_stmt().where(FoodLog.id.in_(ids)).order_by(FoodLog.id)
+        )
+        return list(result.scalars().all())
 
     async def update(self, log: FoodLog, data: FoodLogUpdate) -> FoodLog:
         for field, value in data.model_dump(exclude_unset=True).items():

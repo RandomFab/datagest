@@ -39,6 +39,20 @@ class FoodLogUpdate(BaseModel):
     notes: str | None = None
 
 
+class FoodLogBatchItem(BaseModel):
+    food_item_id: int
+    entry_type: EntryType
+    preparation: Preparation | None = None
+    quantity: Quantity | None = None
+    volume_ml: int | None = Field(None, ge=1)
+    notes: str | None = None
+
+
+class FoodLogBatchCreate(BaseModel):
+    logged_at: datetime
+    items: list[FoodLogBatchItem] = Field(..., min_length=1)
+
+
 class StoolLogCreate(BaseModel):
     bristol_type: int = Field(..., ge=1, le=7)
     quality: StoolQuality

@@ -50,6 +50,10 @@ class FoodItemRepository:
         )
         return result.scalar_one_or_none()
 
+    async def get_existing_ids(self, ids: list[int]) -> set[int]:
+        result = await self.db.execute(select(FoodItem.id).where(FoodItem.id.in_(ids)))
+        return set(result.scalars().all())
+
     async def create(self, data: FoodItemCreate, allergens: list[Allergen]) -> FoodItem:
         item = FoodItem(
             name=data.name,
